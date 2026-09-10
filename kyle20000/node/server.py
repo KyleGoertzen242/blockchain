@@ -4,6 +4,7 @@ import urllib.request
 import urllib.error
 
 from flask import Flask, jsonify, request
+from flask_cors import CORS
 
 from .blockchain import Blockchain
 from .block import Block
@@ -14,6 +15,7 @@ from .consensus import choose_chain
 
 
 app = Flask(__name__)
+CORS(app)
 
 blockchain = Blockchain()
 mempool = Mempool()
