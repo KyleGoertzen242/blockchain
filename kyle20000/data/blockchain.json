@@ -1,0 +1,22 @@
+[
+  {
+    "difficulty": 1,
+    "index": 0,
+    "miner": "GENESIS",
+    "nonce": 0,
+    "previous_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+    "reward": 0,
+    "timestamp": 0,
+    "transactions": []
+  },
+  {
+    "difficulty": 3,
+    "index": 1,
+    "miner": "TEST-MINER",
+    "nonce": 7505,
+    "previous_hash": "c32181924e9bf758636c368cf93d945f36de216df5ad771ef42cca5981a3d613",
+    "reward": 50,
+    "timestamp": 1789070684.092731,
+    "transactions": []
+  }
+]
