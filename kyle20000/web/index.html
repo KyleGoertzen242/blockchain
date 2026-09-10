@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+```
+<title>Kyle20000 Node</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        font-family: Arial, Helvetica, sans-serif;
+        background:
+            radial-gradient(
+                circle at top left,
+                #18243d 0%,
+                #090d18 45%,
+                #05070d 100%
+            );
+        color: #f4f7ff;
+        min-height: 100vh;
+    }
+
+    header {
+        padding: 30px 20px;
+        text-align: center;
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+        background: rgba(0,0,0,0.2);
+    }
+
+    header h1 {
+        margin: 0;
+        font-size: 34px;
+    }
+
+    header p {
+        margin: 8px 0 0;
+        color: #9da9c5;
+    }
+
+    .container {
+        width: min(1100px, 94%);
+        margin: 25px auto 50px;
+    }
+
+    .grid {
+        display: grid;
+        grid-template-columns:
+            repeat(auto-fit, minmax(220px, 1fr));
+        gap: 16px;
+    }
+
+    .card {
+        background: rgba(18, 25, 43, 0.88);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 18px;
+        padding: 20px;
+        box-shadow:
+            0 12px 40px rgba(0,0,0,0.25);
+    }
+
+    .card h2 {
+        margin-top: 0;
+        font-size: 19px;
+    }
+
+    .stat {
+        font-size: 30px;
+        font-weight: bold;
+        margin-top: 10px;
+    }
+
+    .muted {
+        color: #9da9c5;
+        font-size: 13px;
+    }
+
+    input {
+        width: 100%;
+        padding: 13px;
+        margin: 8px 0;
+        border-radius: 10px;
+        border: 1px solid #34415f;
+        background: #0b1020;
+        color: white;
+        outline: none;
+    }
+
+    input:focus {
+        border-color: #687dff;
+    }
+
+    button {
+        width: 100%;
+        padding: 13px;
+        margin-top: 8px;
+        border: 0;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: bold;
+        color: white;
+        background:
+            linear-gradient(
+                135deg,
+                #506cff,
+                #7c4dff
+            );
+    }
+
+    button:hover {
+        filter: brightness(1.15);
+    }
+
+    button.secondary {
+        background: #202b45;
+    }
+
+    button.danger {
+        background: #6e2434;
+    }
+
+    pre {
+        background: #050912;
+        padding: 15px;
+        border-radius: 12px;
+        overflow-x: auto;
+        max-height: 500px;
+        color: #b9c8e8;
+        font-size: 12px;
+        line-height: 1.5;
+    }
+
+    .status {
+        display: inline-block;
+        padding: 6px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        background: #23351f;
+        color: #9cff91;
+    }
+
+    .status.offline {
+        background: #402029;
+        color: #ff8e9f;
+    }
+
+    .section {
+        margin-top: 20px;
+    }
+
+    .hash {
+        word-break: break-all;
+        font-size: 11px;
+        color: #9da9c5;
+    }
+
+    footer {
+        text-align: center;
+        color: #697692;
+        padding: 25px;
+        font-size: 12px;
+    }
+
+    @media (max-width: 600px) {
+        header h1 {
+            font-size: 27px;
+        }
+
+        .container {
+            width: 92%;
+        }
+    }
+</style>
+```
+
+</head>
+
+<body>
+
+<header>
+
+```
+<h1>⛓️ Kyle20000</h1>
+
+<p>
+    Local Blockchain Node Test Interface
+</p>
+```
+
+</header>
+
+<div class="container">
+
+```
+<!-- NETWORK OVERVIEW -->
+
+<div class="grid">
+
+    <div class="card">
+
+        <div class="muted">
+            NODE
+        </div>
+
+        <div
+            class="stat"
+            id="node"
+        >
+            —
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="muted">
+            BLOCKS
+        </div>
+
+        <div
+            class="stat"
+            id="blocks"
+        >
+            —
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="muted">
+            LATEST BLOCK
+        </div>
+
+        <div
+            class="stat"
+            id="latestBlock"
+        >
+            —
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="muted">
+            MEMPOOL
+        </div>
+
+        <div
+            class="stat"
+            id="mempoolSize"
+        >
+            —
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- NODE / PEERS -->
+
+<div class="section grid">
+
+    <div class="card">
+
+        <h2>
+            Node Status
+        </h2>
+
+        <div
+            id="connectionStatus"
+            class="status offline"
+        >
+            Checking...
+        </div>
+
+        <p class="muted">
+            Latest block hash
+        </p>
+
+        <div
+            id="latestHash"
+            class="hash"
+        >
+            —
+        </div>
+
+        <button
+            onclick="refreshAll()"
+        >
+            Refresh Node
+        </button>
+
+    </div>
+
+
+    <div class="card">
+
+        <h2>
+            Peer Network
+        </h2>
+
+        <button
+            class="secondary"
+            onclick="loadPeers()"
+        >
+            Check Peers
+        </button>
+
+        <pre id="peersOutput">No data yet.</pre>
+
+    </div>
+
+</div>
+
+
+<!-- BALANCE / MINING -->
+
+<div class="section grid">
+
+    <div class="card">
+
+        <h2>
+            Check Balance
+        </h2>
+
+        <input
+            id="balanceAddress"
+            placeholder="Enter wallet address"
+        >
+
+        <button
+            onclick="checkBalance()"
+        >
+            Check Balance
+        </button>
+
+        <pre id="balanceOutput">
+```
+
+No address entered. </pre>
+
+```
+    </div>
+
+
+    <div class="card">
+
+        <h2>
+            Development Mining
+        </h2>
+
+        <p class="muted">
+            Mine a test block using this local node.
+        </p>
+
+        <input
+            id="minerAddress"
+            placeholder="Miner wallet address"
+        >
+
+        <button
+            onclick="mineTo()"
+        >
+            ⛏️ Mine To Address
+        </button>
+
+        <button
+            class="danger"
+            onclick="mineNode()"
+        >
+            ⛏️ Mine To Development Node
+        </button>
+
+        <pre id="miningOutput">
+```
+
+No mining performed. </pre>
+
+```
+    </div>
+
+</div>
+
+
+<!-- MEMPOOL / BLOCKCHAIN -->
+
+<div class="section grid">
+
+    <div class="card">
+
+        <h2>
+            Mempool
+        </h2>
+
+        <button
+            class="secondary"
+            onclick="loadMempool()"
+        >
+            Refresh Mempool
+        </button>
+
+        <pre id="mempoolOutput">
+```
+
+No data yet. </pre>
+
+```
+    </div>
+
+
+    <div class="card">
+
+        <h2>
+            Blockchain
+        </h2>
+
+        <button
+            class="secondary"
+            onclick="loadBlockchain()"
+        >
+            Load Blockchain
+        </button>
+
+        <pre id="blockchainOutput">
+```
+
+No data yet. </pre>
+
+```
+    </div>
+
+</div>
+
+
+<!-- RAW STATUS -->
+
+<div class="section card">
+
+    <h2>
+        Raw Node Status
+    </h2>
+
+    <pre id="statusOutput">
+```
+
+Loading... </pre>
+
+```
+</div>
+```
+
+</div>
+
+<footer>
+
+```
+Kyle20000 local development network ·
+Flask node interface
+```
+
+</footer>
+
+<script>
+
+    /*
+     * ==========================================
+     * Kyle20000 Node Configuration
+     * ==========================================
+     *
+     * Change this when connecting the dashboard
+     * to a different node.
+     */
+
+    const NODE = "http://127.0.0.1:5001";
+
+
+    /*
+     * ==========================================
+     * API Helper
+     * ==========================================
+     */
+
+    async function api(
+        path,
+        options = {}
+    ) {
+
+        const response = await fetch(
+            NODE + path,
+            options
+        );
+
+        const data = await response.json();
+
+        return {
+            ok: response.ok,
+            data: data
+        };
+    }
+
+
+    /*
+     * ==========================================
+     * Load Node Status
+     * ==========================================
+     */
+
+    async function loadStatus() {
+
+        const statusElement =
+            document.getElementById(
+                "connectionStatus"
+            );
+
+        try {
+
+            const result =
+                await api("/status");
+
+            const data =
+                result.data;
+
+
+            document.getElementById(
+                "node"
+            ).textContent =
+                data.node;
+
+
+            document.getElementById(
+                "blocks"
+            ).textContent =
+                data.blocks;
+
+
+            document.getElementById(
+                "latestBlock"
+            ).textContent =
+                data.latest_block;
+
+
+            document.getElementById(
+                "mempoolSize"
+            ).textContent =
+                data.mempool_size;
+
+
+            document.getElementById(
+                "latestHash"
+            ).textContent =
+                data.latest_hash;
+
+
+            document.getElementById(
+                "statusOutput"
+            ).textContent =
+                JSON.stringify(
+                    data,
+                    null,
+                    2
+                );
+
+
+            statusElement.textContent =
+                "● ONLINE";
+
+
+            statusElement.classList.remove(
+                "offline"
+            );
+
+        } catch (error) {
+
+            statusElement.textContent =
+                "● OFFLINE";
+
+
+            statusElement.classList.add(
+                "offline"
+            );
+
+
+            document.getElementById(
+                "statusOutput"
+            ).textContent =
+                "Unable to connect to node.\n\n" +
+                error;
+
+        }
+    }
+
+
+    /*
+     * ==========================================
+     * Load Peer Status
+     * ==========================================
+     */
+
+    async function loadPeers() {
+
+        try {
+
+            const result =
+                await api(
+                    "/peer-status"
+                );
+
+
+            document.getElementById(
+                "peersOutput"
+            ).textContent =
+                JSON.stringify(
+                    result.data,
+                    null,
+                    2
+                );
+
+        } catch (error) {
+
+            document.getElementById(
+                "peersOutput"
+            ).textContent =
+                String(error);
+
+        }
+    }
+
+
+    /*
+     * ==========================================
+     * Load Mempool
+     * ==========================================
+     */
+
+    async function loadMempool() {
+
+        try {
+
+            const result =
+                await api(
+                    "/mempool"
+                );
+
+
+            document.getElementById(
+                "mempoolOutput"
+            ).textContent =
+                JSON.stringify(
+                    result.data,
+                    null,
+                    2
+                );
+
+        } catch (error) {
+
+            document.getElementById(
+                "mempoolOutput"
+            ).textContent =
+                String(error);
+
+        }
+    }
+
+
+    /*
+     * ==========================================
+     * Load Blockchain
+     * ==========================================
+     */
+
+    async function loadBlockchain() {
+
+        try {
+
+            const result =
+                await api(
+                    "/blockchain"
+                );
+
+
+            document.getElementById(
+                "blockchainOutput"
+            ).textContent =
+                JSON.stringify(
+                    result.data,
+                    null,
+                    2
+                );
+
+        } catch (error) {
+
+            document.getElementById(
+                "blockchainOutput"
+            ).textContent =
+                String(error);
+
+        }
+    }
+
+
+    /*
+     * ==========================================
+     * Check Wallet Balance
+     * ==========================================
+     */
+
+    async function checkBalance() {
+
+        const address =
+            document.getElementById(
+                "balanceAddress"
+            ).value.trim();
+
+
+        if (!address) {
+
+            alert(
+                "Enter a wallet address first."
+            );
+
+            return;
+        }
+
+
+        try {
+
+            const result =
+                await api(
+                    "/balance/" +
+                    encodeURIComponent(
+                        address
+                    )
+                );
+
+
+            document.getElementById(
+                "balanceOutput"
+            ).textContent =
+                JSON.stringify(
+                    result.data,
+                    null,
+                    2
+                );
+
+        } catch (error) {
+
+            document.getElementById(
+                "balanceOutput"
+            ).textContent =
+                String(error);
+
+        }
+    }
+
+
+    /*
+     * ==========================================
+     * Mine To Wallet
+     * ==========================================
+     */
+
+    async function mineTo() {
+
+        const address =
+            document.getElementById(
+                "minerAddress"
+            ).value.trim();
+
+
+        if (!address) {
+
+            alert(
+                "Enter a miner address first."
+            );
+
+            return;
+        }
+
+
+        document.getElementById(
+            "miningOutput"
+        ).textContent =
+            "Mining...\nPlease wait.";
+
+
+        try {
+
+            const result =
+                await api(
+                    "/mine-to/" +
+                    encodeURIComponent(
+                        address
+                    )
+                );
+
+
+            document.getElementById(
+                "miningOutput"
+            ).textContent =
+                JSON.stringify(
+                    result.data,
+                    null,
+                    2
+                );
+
+
+            await refreshAll();
+
+        } catch (error) {
+
+            document.getElementById(
+                "miningOutput"
+            ).textContent =
+                String(error);
+
+        }
+    }
+
+
+    /*
+     * ==========================================
+     * Development Node Mining
+     * ==========================================
+     */
+
+    async function mineNode() {
+
+        document.getElementById(
+            "miningOutput"
+        ).textContent =
+            "Mining...\nPlease wait.";
+
+
+        try {
+
+            const result =
+                await api(
+                    "/mine",
+                    {
+                        method: "POST"
+                    }
+                );
+
+
+            document.getElementById(
+                "miningOutput"
+            ).textContent =
+                JSON.stringify(
+                    result.data,
+                    null,
+                    2
+                );
+
+
+            await refreshAll();
+
+        } catch (error) {
+
+            document.getElementById(
+                "miningOutput"
+            ).textContent =
+                String(error);
+
+        }
+    }
+
+
+    /*
+     * ==========================================
+     * Refresh Everything
+     * ==========================================
+     */
+
+    async function refreshAll() {
+
+        await loadStatus();
+
+        await loadMempool();
+
+    }
+
+
+    /*
+     * ==========================================
+     * Initial Load
+     * ==========================================
+     */
+
+    refreshAll();
+
+
+    /*
+     * Automatically refresh node status
+     * every five seconds.
+     */
+
+    setInterval(
+        loadStatus,
+        5000
+    );
+
+</script>
+
+</body>
+</html>
