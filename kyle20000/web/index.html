@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-```
 <title>Kyle20000 Node</title>
 
 <style>
@@ -177,7 +176,6 @@
         }
     }
 </style>
-```
 
 </head>
 
@@ -185,290 +183,288 @@
 
 <header>
 
-```
 <h1>⛓️ Kyle20000</h1>
 
 <p>
     Local Blockchain Node Test Interface
 </p>
-```
 
 </header>
 
 <div class="container">
 
-```
 <!-- NETWORK OVERVIEW -->
 
 <div class="grid">
 
-    <div class="card">
+```
+<div class="card">
 
-        <div class="muted">
-            NODE
-        </div>
-
-        <div
-            class="stat"
-            id="node"
-        >
-            —
-        </div>
-
+    <div class="muted">
+        NODE
     </div>
 
-
-    <div class="card">
-
-        <div class="muted">
-            BLOCKS
-        </div>
-
-        <div
-            class="stat"
-            id="blocks"
-        >
-            —
-        </div>
-
-    </div>
-
-
-    <div class="card">
-
-        <div class="muted">
-            LATEST BLOCK
-        </div>
-
-        <div
-            class="stat"
-            id="latestBlock"
-        >
-            —
-        </div>
-
-    </div>
-
-
-    <div class="card">
-
-        <div class="muted">
-            MEMPOOL
-        </div>
-
-        <div
-            class="stat"
-            id="mempoolSize"
-        >
-            —
-        </div>
-
+    <div
+        class="stat"
+        id="node"
+    >
+        —
     </div>
 
 </div>
 
+
+<div class="card">
+
+    <div class="muted">
+        BLOCKS
+    </div>
+
+    <div
+        class="stat"
+        id="blocks"
+    >
+        —
+    </div>
+
+</div>
+
+
+<div class="card">
+
+    <div class="muted">
+        LATEST BLOCK
+    </div>
+
+    <div
+        class="stat"
+        id="latestBlock"
+    >
+        —
+    </div>
+
+</div>
+
+
+<div class="card">
+
+    <div class="muted">
+        MEMPOOL
+    </div>
+
+    <div
+        class="stat"
+        id="mempoolSize"
+    >
+        —
+    </div>
+
+</div>
+```
+
+</div>
 
 <!-- NODE / PEERS -->
 
 <div class="section grid">
 
-    <div class="card">
+```
+<div class="card">
 
-        <h2>
-            Node Status
-        </h2>
+    <h2>
+        Node Status
+    </h2>
 
-        <div
-            id="connectionStatus"
-            class="status offline"
-        >
-            Checking...
-        </div>
-
-        <p class="muted">
-            Latest block hash
-        </p>
-
-        <div
-            id="latestHash"
-            class="hash"
-        >
-            —
-        </div>
-
-        <button
-            onclick="refreshAll()"
-        >
-            Refresh Node
-        </button>
-
+    <div
+        id="connectionStatus"
+        class="status offline"
+    >
+        Checking...
     </div>
 
+    <p class="muted">
+        Latest block hash
+    </p>
 
-    <div class="card">
-
-        <h2>
-            Peer Network
-        </h2>
-
-        <button
-            class="secondary"
-            onclick="loadPeers()"
-        >
-            Check Peers
-        </button>
-
-        <pre id="peersOutput">No data yet.</pre>
-
+    <div
+        id="latestHash"
+        class="hash"
+    >
+        —
     </div>
+
+    <button
+        onclick="refreshAll()"
+    >
+        Refresh Node
+    </button>
 
 </div>
 
+
+<div class="card">
+
+    <h2>
+        Peer Network
+    </h2>
+
+    <button
+        class="secondary"
+        onclick="loadPeers()"
+    >
+        Check Peers
+    </button>
+
+    <pre id="peersOutput">No data yet.</pre>
+
+</div>
+```
+
+</div>
 
 <!-- BALANCE / MINING -->
 
 <div class="section grid">
 
-    <div class="card">
+```
+<div class="card">
 
-        <h2>
-            Check Balance
-        </h2>
+    <h2>
+        Check Balance
+    </h2>
 
-        <input
-            id="balanceAddress"
-            placeholder="Enter wallet address"
-        >
+    <input
+        id="balanceAddress"
+        placeholder="Enter wallet address"
+    >
 
-        <button
-            onclick="checkBalance()"
-        >
-            Check Balance
-        </button>
+    <button
+        onclick="checkBalance()"
+    >
+        Check Balance
+    </button>
 
-        <pre id="balanceOutput">
+    <pre id="balanceOutput">
 ```
 
 No address entered. </pre>
 
 ```
-    </div>
+</div>
 
 
-    <div class="card">
+<div class="card">
 
-        <h2>
-            Development Mining
-        </h2>
+    <h2>
+        Development Mining
+    </h2>
 
-        <p class="muted">
-            Mine a test block using this local node.
-        </p>
+    <p class="muted">
+        Mine a test block using this local node.
+    </p>
 
-        <input
-            id="minerAddress"
-            placeholder="Miner wallet address"
-        >
+    <input
+        id="minerAddress"
+        placeholder="Miner wallet address"
+    >
 
-        <button
-            onclick="mineTo()"
-        >
-            ⛏️ Mine To Address
-        </button>
+    <button
+        onclick="mineTo()"
+    >
+        ⛏️ Mine To Address
+    </button>
 
-        <button
-            class="danger"
-            onclick="mineNode()"
-        >
-            ⛏️ Mine To Development Node
-        </button>
+    <button
+        class="danger"
+        onclick="mineNode()"
+    >
+        ⛏️ Mine To Development Node
+    </button>
 
-        <pre id="miningOutput">
+    <pre id="miningOutput">
 ```
 
 No mining performed. </pre>
 
 ```
-    </div>
+</div>
+```
 
 </div>
-
 
 <!-- MEMPOOL / BLOCKCHAIN -->
 
 <div class="section grid">
 
-    <div class="card">
+```
+<div class="card">
 
-        <h2>
-            Mempool
-        </h2>
+    <h2>
+        Mempool
+    </h2>
 
-        <button
-            class="secondary"
-            onclick="loadMempool()"
-        >
-            Refresh Mempool
-        </button>
+    <button
+        class="secondary"
+        onclick="loadMempool()"
+    >
+        Refresh Mempool
+    </button>
 
-        <pre id="mempoolOutput">
+    <pre id="mempoolOutput">
 ```
 
 No data yet. </pre>
 
 ```
-    </div>
-
-
-    <div class="card">
-
-        <h2>
-            Blockchain
-        </h2>
-
-        <button
-            class="secondary"
-            onclick="loadBlockchain()"
-        >
-            Load Blockchain
-        </button>
-
-        <pre id="blockchainOutput">
-```
-
-No data yet. </pre>
-
-```
-    </div>
-
 </div>
 
+
+<div class="card">
+
+    <h2>
+        Blockchain
+    </h2>
+
+    <button
+        class="secondary"
+        onclick="loadBlockchain()"
+    >
+        Load Blockchain
+    </button>
+
+    <pre id="blockchainOutput">
+```
+
+No data yet. </pre>
+
+```
+</div>
+```
+
+</div>
 
 <!-- RAW STATUS -->
 
 <div class="section card">
 
-    <h2>
-        Raw Node Status
-    </h2>
+```
+<h2>
+    Raw Node Status
+</h2>
 
-    <pre id="statusOutput">
+<pre id="statusOutput">
 ```
 
 Loading... </pre>
 
-```
 </div>
-```
 
 </div>
 
 <footer>
 
-```
 Kyle20000 local development network ·
 Flask node interface
-```
 
 </footer>
 
