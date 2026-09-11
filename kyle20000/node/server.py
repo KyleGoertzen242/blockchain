@@ -803,7 +803,7 @@ if __name__ == "__main__":
     )
 
     app.run(
-        host="184.151.230.93",
+        host="0.0.0.0",
         port=PORT,
         debug=False
     )
