@@ -29,16 +29,16 @@ DEFAULT_PORT = 5001
 
 PEERS = {
     5001: [
-        "http://184.151.230.93:5002",
-        "http://184.151.230.93:5003"
+        "https://kylegoertzen242.github.io/blockchain/kyle20000/web/index.html:5002",
+        "https://kylegoertzen242.github.io/blockchain/kyle20000/web/index.html:5003"
     ],
     5002: [
-        "http://184.151.230.93:5001",
-        "http://184.151.230.93:5003"
+        "https://kylegoertzen242.github.io/blockchain/kyle20000/web/index.html:5001",
+        "https://kylegoertzen242.github.io/blockchain/kyle20000/web/index.html:5003"
     ],
     5003: [
-        "http://184.151.230.93:5001",
-        "http://184.151.230.93:5002"
+        "https://kylegoertzen242.github.io/blockchain/kyle20000/web/index.html:5001",
+        "https://kylegoertzen242.github.io/blockchain/kyle20000/web/index.html:5002"
     ]
 }
 
