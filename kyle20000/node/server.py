@@ -12,12 +12,21 @@ from .mempool import Mempool
 from .transaction import Transaction
 from .mining import mine_block
 from .consensus import choose_chain
+from .database import load_blockchain, save_blockchain
 
 
 app = Flask(__name__)
 CORS(app)
 
-blockchain = Blockchain()
+loaded_chain = load_blockchain()
+
+if loaded_chain:
+    blockchain = Blockchain()
+    blockchain.chain = loaded_chain
+else:
+    blockchain = Blockchain()
+    save_blockchain(blockchain)
+
 mempool = Mempool()
 
 
@@ -549,6 +558,8 @@ def mine():
         block
     )
 
+    save_blockchain(blockchain)
+
     mempool.clear_confirmed(
         blockchain
     )
@@ -591,6 +602,8 @@ def mine_to(address):
     blockchain.add_block(
         block
     )
+
+    save_blockchain(blockchain)
 
     mempool.clear_confirmed(
         blockchain
@@ -665,6 +678,8 @@ def receive_block():
         blockchain.add_block(
             block
         )
+
+        save_blockchain(blockchain)
 
     except ValueError as error:
 
@@ -748,6 +763,8 @@ def sync():
                 blockchain.chain = (
                     candidate.chain
                 )
+
+                save_blockchain(blockchain)
 
                 mempool.clear_confirmed(
                     blockchain
