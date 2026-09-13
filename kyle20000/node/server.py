@@ -81,18 +81,33 @@ if loaded_chain:
 
     blockchain.chain = loaded_chain
 
-    # Make sure the persisted chain is valid.
-    if not blockchain.validate():
-
-        raise RuntimeError(
-            f"Persisted blockchain for node "
-            f"{PORT} is invalid."
+    try:
+        valid = blockchain.validate()
+    except Exception as error:
+        valid = False
+        print(
+            f"WARNING: Could not validate persisted "
+            f"blockchain for node {PORT}: {error}"
         )
 
-    print(
-        f"Loaded {len(blockchain.chain)} "
-        f"blocks for node {PORT}"
-    )
+    if not valid:
+        print(
+            f"WARNING: Persisted blockchain for node "
+            f"{PORT} failed validation."
+        )
+        print(
+            "The existing blockchain will NOT be deleted."
+        )
+        print(
+            "Loaded blocks:",
+            len(blockchain.chain)
+        )
+
+    else:
+        print(
+            f"Loaded {len(blockchain.chain)} "
+            f"valid blocks for node {PORT}"
+        )
 
 else:
 
