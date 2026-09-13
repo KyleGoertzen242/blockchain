@@ -31,16 +31,16 @@ DEFAULT_PORT = 5001
 
 PEERS = {
     5001: [
-        "http://127.0.0.1:5002",
-        "http://127.0.0.1:5003"
+        "https://www.friendcodeforum.com",
+        "https://www.friendcodeforum.com"
     ],
     5002: [
-        "http://127.0.0.1:5001",
-        "http://127.0.0.1:5003"
+        "https://www.friendcodeforum.com",
+        "https://www.friendcodeforum.com"
     ],
     5003: [
-        "http://127.0.0.1:5001",
-        "http://127.0.0.1:5002"
+        "https://www.friendcodeforum.com",
+        "https://www.friendcodeforum.com"
     ]
 }
 
