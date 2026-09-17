@@ -27,20 +27,20 @@ CORS(app)
 # Local development network
 # --------------------------------------------------
 
-DEFAULT_PORT = 5001
+DEFAULT_PORT = 443
 
 PEERS = {
-    5001: [
-        "http://www.friendcodeforum.com:5002",
-        "http://www.friendcodeforum.com:5003"
+    443: [
+        "https://www.friendcodeforum.com:443",
+        "https://www.friendcodeforum.com:443"
     ],
-    5002: [
-        "http://www.friendcodeforum.com:5001",
-        "http://www.friendcodeforum.com:5003"
+    443: [
+        "https://www.friendcodeforum.com:443",
+        "https://www.friendcodeforum.com:443"
     ],
-    5003: [
-        "http://www.friendcodeforum.com:5001",
-        "http://www.friendcodeforum.com:5002"
+    443: [
+        "https://www.friendcodeforum.com:443",
+        "https://www.friendcodeforum.com:443"
     ]
 }
 
