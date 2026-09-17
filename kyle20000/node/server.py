@@ -27,7 +27,7 @@ CORS(app)
 # Local development network
 # --------------------------------------------------
 
-DEFAULT_PORT = 443
+DEFAULT_PORT = 5001
 
 PEERS = {
     5001: [
