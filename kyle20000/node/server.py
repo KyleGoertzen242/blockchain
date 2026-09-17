@@ -30,17 +30,17 @@ CORS(app)
 DEFAULT_PORT = 443
 
 PEERS = {
-    443: [
-        "https://www.friendcodeforum.com:443",
-        "https://www.friendcodeforum.com:443"
+    5001: [
+        "https://www.friendcodeforum.com:5002",
+        "https://www.friendcodeforum.com:5003"
     ],
-    443: [
-        "https://www.friendcodeforum.com:443",
-        "https://www.friendcodeforum.com:443"
+    5002: [
+        "https://www.friendcodeforum.com:5001",
+        "https://www.friendcodeforum.com:5003"
     ],
-    443: [
-        "https://www.friendcodeforum.com:443",
-        "https://www.friendcodeforum.com:443"
+    5003: [
+        "https://www.friendcodeforum.com:5001",
+        "https://www.friendcodeforum.com:5002"
     ]
 }
 
