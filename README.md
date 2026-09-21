@@ -3,7 +3,7 @@ blockchain
 
 
 Copyright Kyle Rodney David Goertzen
-https://kylegoertzen242.github.io/blockchain/kyle20000/web/index.html
+https://www.friendcodeforum.com
 
 download blockchain-main.zip
 
