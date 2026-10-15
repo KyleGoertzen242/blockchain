@@ -1,913 +1,1492 @@
-<!DOCTYPE html>
-
+```html
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="theme-color" content="#080d18">
+    <title>Kyle20000 — Wallet & Network</title>
 
-<title>Kyle20000 Node</title>
+    <style>
+        :root {
+            color-scheme: dark;
+            --bg: #080d18;
+            --panel: #101827;
+            --panel2: #141f31;
+            --line: #263449;
+            --text: #edf4ff;
+            --muted: #91a3bd;
+            --green: #43e0ad;
+            --blue: #6da8ff;
+            --red: #ff7185;
+            --gold: #f3c969;
+        }
 
-<style>
-    * {
-        box-sizing: border-box;
-    }
+        * {
+            box-sizing: border-box;
+        }
 
-    body {
-        margin: 0;
-        font-family: Arial, Helvetica, sans-serif;
-        background:
-            radial-gradient(
-                circle at top left,
-                #18243d 0%,
-                #090d18 45%,
-                #05070d 100%
-            );
-        color: #f4f7ff;
-        min-height: 100vh;
-    }
+        body {
+            margin: 0;
+            background: radial-gradient(ellipse at 12% -8%, #142b42 0, transparent 42%), var(--bg);
+            color: var(--text);
+            font: 15px/1.5 Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif;
+        }
 
-    header {
-        padding: 30px 20px;
-        text-align: center;
-        border-bottom: 1px solid rgba(255,255,255,0.08);
-        background: rgba(0,0,0,0.2);
-    }
+        button,
+        input {
+            font: inherit;
+        }
 
-    header h1 {
-        margin: 0;
-        font-size: 34px;
-    }
+        button {
+            border: 0;
+            border-radius: 10px;
+            padding: 11px 15px;
+            background: var(--green);
+            color: #06130f;
+            font-weight: 750;
+            cursor: pointer;
+        }
 
-    header p {
-        margin: 8px 0 0;
-        color: #9da9c5;
-    }
+        button.secondary {
+            background: #202d42;
+            color: var(--text);
+            border: 1px solid var(--line);
+        }
 
-    .container {
-        width: min(1100px, 94%);
-        margin: 25px auto 50px;
-    }
+        button.danger {
+            background: #4a202b;
+            color: #ffdce2;
+            border: 1px solid #713443;
+        }
 
-    .grid {
-        display: grid;
-        grid-template-columns:
-            repeat(auto-fit, minmax(220px, 1fr));
-        gap: 16px;
-    }
+        button:disabled {
+            opacity: .5;
+            cursor: wait;
+        }
 
-    .card {
-        background: rgba(18, 25, 43, 0.88);
-        border: 1px solid rgba(255,255,255,0.08);
-        border-radius: 18px;
-        padding: 20px;
-        box-shadow:
-            0 12px 40px rgba(0,0,0,0.25);
-    }
+        input {
+            width: 100%;
+            padding: 12px;
+            background: #080f1d;
+            color: var(--text);
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            outline: none;
+        }
 
-    .card h2 {
-        margin-top: 0;
-        font-size: 19px;
-    }
+        input:focus {
+            border-color: var(--green);
+        }
 
-    .stat {
-        font-size: 30px;
-        font-weight: bold;
-        margin-top: 10px;
-    }
+        label {
+            display: block;
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 700;
+            margin: 13px 0 6px;
+        }
 
-    .muted {
-        color: #9da9c5;
-        font-size: 13px;
-    }
+        .wrap {
+            width: min(1200px, 94%);
+            margin: auto;
+        }
 
-    input {
-        width: 100%;
-        padding: 13px;
-        margin: 8px 0;
-        border-radius: 10px;
-        border: 1px solid #34415f;
-        background: #0b1020;
-        color: white;
-        outline: none;
-    }
+        .top {
+            border-bottom: 1px solid #202b3d;
+            background: #080d18dd;
+            position: sticky;
+            top: 0;
+            z-index: 5;
+            backdrop-filter: blur(16px);
+        }
 
-    input:focus {
-        border-color: #687dff;
-    }
+        .nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            padding: 16px 0;
+        }
 
-    button {
-        width: 100%;
-        padding: 13px;
-        margin-top: 8px;
-        border: 0;
-        border-radius: 10px;
-        cursor: pointer;
-        font-weight: bold;
-        color: white;
-        background:
-            linear-gradient(
-                135deg,
-                #506cff,
-                #7c4dff
-            );
-    }
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 850;
+            font-size: 18px;
+            letter-spacing: -.4px;
+        }
 
-    button:hover {
-        filter: brightness(1.15);
-    }
+        .logo {
+            display: grid;
+            place-items: center;
+            width: 38px;
+            height: 38px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--green), #68a8ff);
+            color: #07131c;
+            font-weight: 950;
+        }
 
-    button.secondary {
-        background: #202b45;
-    }
+        .navright {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--muted);
+            font-size: 13px;
+        }
 
-    button.danger {
-        background: #6e2434;
-    }
+        .dot {
+            width: 8px;
+            height: 8px;
+            display: inline-block;
+            border-radius: 50%;
+            background: #718096;
+            margin-right: 6px;
+        }
 
-    pre {
-        background: #050912;
-        padding: 15px;
-        border-radius: 12px;
-        overflow-x: auto;
-        max-height: 500px;
-        color: #b9c8e8;
-        font-size: 12px;
-        line-height: 1.5;
-    }
+        .dot.ok {
+            background: var(--green);
+            box-shadow: 0 0 12px #43e0ad77;
+        }
 
-    .status {
-        display: inline-block;
-        padding: 6px 10px;
-        border-radius: 20px;
-        font-size: 12px;
-        background: #23351f;
-        color: #9cff91;
-    }
+        .hero {
+            padding: 30px 0 20px;
+            display: flex;
+            align-items: end;
+            justify-content: space-between;
+            gap: 20px;
+        }
 
-    .status.offline {
-        background: #402029;
-        color: #ff8e9f;
-    }
+        .eyebrow {
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--green);
+            font-weight: 800;
+        }
 
-    .section {
-        margin-top: 20px;
-    }
+        .hero h1 {
+            font-size: clamp(27px, 4vw, 40px);
+            letter-spacing: -1.4px;
+            margin: 6px 0;
+        }
 
-    .hash {
-        word-break: break-all;
-        font-size: 11px;
-        color: #9da9c5;
-    }
+        .hero p {
+            margin: 0;
+            color: var(--muted);
+        }
 
-    footer {
-        text-align: center;
-        color: #697692;
-        padding: 25px;
-        font-size: 12px;
-    }
+        .api {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            min-width: min(440px, 100%);
+        }
 
-    @media (max-width: 600px) {
-        header h1 {
+        .api input {
+            min-width: 0;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 14px;
+            margin: 12px 0 18px;
+        }
+
+        .stat,
+        .card {
+            background: linear-gradient(145deg, #121d2e, #0e1725);
+            border: 1px solid var(--line);
+            border-radius: 17px;
+        }
+
+        .stat {
+            padding: 18px;
+        }
+
+        .stat small {
+            color: var(--muted);
+            font-weight: 650;
+        }
+
+        .stat strong {
+            display: block;
             font-size: 27px;
+            margin-top: 7px;
+            letter-spacing: -.6px;
+            overflow-wrap: anywhere;
         }
 
-        .container {
-            width: 92%;
+        .stat em {
+            font-style: normal;
+            color: var(--green);
+            font-size: 12px;
         }
-    }
-</style>
 
+        .layout {
+            display: grid;
+            grid-template-columns: 1.05fr .95fr;
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+
+        .card {
+            padding: 21px;
+            min-width: 0;
+        }
+
+        .cardhead {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .card h2 {
+            font-size: 17px;
+            margin: 0;
+            letter-spacing: -.3px;
+        }
+
+        .muted {
+            color: var(--muted);
+        }
+
+        .tiny {
+            font-size: 12px;
+        }
+
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            border: 1px solid var(--line);
+            background: #0a1220;
+            border-radius: 999px;
+            padding: 5px 9px;
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .balance {
+            font-size: 34px;
+            font-weight: 850;
+            letter-spacing: -1px;
+            margin: 10px 0 2px;
+        }
+
+        .address {
+            font-size: 11px;
+            overflow-wrap: anywhere;
+            color: #9db4d5;
+            background: #0a1220;
+            border: 1px solid var(--line);
+            border-radius: 9px;
+            padding: 10px;
+            margin-top: 10px;
+        }
+
+        .row {
+            display: flex;
+            gap: 9px;
+            align-items: center;
+        }
+
+        .row > * {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 14px;
+        }
+
+        .actions button {
+            flex: 1;
+        }
+
+        .divider {
+            height: 1px;
+            background: var(--line);
+            margin: 19px 0;
+        }
+
+        .notice {
+            border: 1px solid #284a4a;
+            background: #102c2a;
+            color: #b8f5df;
+            padding: 11px 12px;
+            border-radius: 10px;
+            font-size: 12px;
+            margin-top: 12px;
+            overflow-wrap: anywhere;
+        }
+
+        .notice.err {
+            border-color: #66313e;
+            background: #2b151d;
+            color: #ffccd5;
+        }
+
+        .notice.warn {
+            border-color: #63502b;
+            background: #2a2416;
+            color: #f6df9f;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 7px;
+            flex-wrap: wrap;
+            margin: 10px 0 15px;
+        }
+
+        .tab {
+            background: transparent;
+            color: var(--muted);
+            border: 1px solid var(--line);
+            padding: 8px 11px;
+        }
+
+        .tab.active {
+            background: #1d3a38;
+            color: var(--green);
+            border-color: #2d6158;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .tablewrap {
+            overflow: auto;
+            max-height: 340px;
+            border: 1px solid var(--line);
+            border-radius: 10px;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 11px 12px;
+            border-bottom: 1px solid var(--line);
+        }
+
+        th {
+            color: var(--muted);
+            background: #0a1220;
+            position: sticky;
+            top: 0;
+        }
+
+        td code {
+            color: #c5d8f2;
+        }
+
+        .empty {
+            padding: 20px;
+            text-align: center;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .pre {
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+            max-height: 380px;
+            overflow: auto;
+            background: #080f1b;
+            border: 1px solid var(--line);
+            padding: 12px;
+            border-radius: 10px;
+            font: 12px/1.5 ui-monospace, monospace;
+        }
+
+        .footer {
+            color: var(--muted);
+            font-size: 12px;
+            text-align: center;
+            padding: 0 0 32px;
+        }
+
+        .smallbtn {
+            padding: 6px 9px;
+            font-size: 11px;
+        }
+
+        .walletgrid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .filelabel {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 12px;
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            background: #202d42;
+            color: var(--text);
+            font-size: 13px;
+            cursor: pointer;
+            font-weight: 700;
+        }
+
+        input[type=file] {
+            display: none;
+        }
+
+        .labelrow {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .hint {
+            color: var(--muted);
+            font-size: 12px;
+            margin-top: 8px;
+        }
+
+        @media (max-width: 850px) {
+            .stats {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .layout {
+                grid-template-columns: 1fr;
+            }
+
+            .hero {
+                align-items: stretch;
+                flex-direction: column;
+            }
+
+            .api {
+                min-width: 0;
+            }
+        }
+
+        @media (max-width: 520px) {
+            .wrap {
+                width: 92%;
+            }
+
+            .nav {
+                align-items: flex-start;
+            }
+
+            .navright {
+                font-size: 11px;
+            }
+
+            .stats {
+                gap: 8px;
+            }
+
+            .stat {
+                padding: 13px;
+            }
+
+            .stat strong {
+                font-size: 23px;
+            }
+
+            .card {
+                padding: 15px;
+            }
+
+            .walletgrid {
+                grid-template-columns: 1fr;
+            }
+
+            .api button {
+                padding: 10px;
+            }
+
+            .balance {
+                font-size: 29px;
+            }
+        }
+    </style>
+
+    <!-- TweetNaCl provides the same Ed25519 signing format used by PyNaCl in node/wallet.py. -->
+    <script src="https://cdn.jsdelivr.net/npm/tweetnacl@1.0.3/nacl.min.js"></script>
 </head>
 
 <body>
+    <div class="top">
+        <div class="wrap nav">
+            <div class="brand">
+                <div class="logo">K</div>
+                <div>
+                    KYLE20000
+                    <div class="muted tiny" style="font-weight:500;letter-spacing:.4px">
+                        DECENTRALIZED LEDGER
+                    </div>
+                </div>
+            </div>
 
-<header>
-
-<h1>⛓️ Kyle20000</h1>
-
-<p>
-    Local Blockchain Node Test Interface
-</p>
-
-</header>
-
-<div class="container">
-
-<!-- NETWORK OVERVIEW -->
-
-<div class="grid">
-
-
-<div class="card">
-
-    <div class="muted">
-        NODE
+            <div class="navright">
+                <span id="netDot" class="dot"></span>
+                <span id="netText">Not connected</span>
+            </div>
+        </div>
     </div>
 
-    <div
-        class="stat"
-        id="node"
-    >
-        —
-    </div>
-
-</div>
-
-
-<div class="card">
-
-    <div class="muted">
-        BLOCKS
-    </div>
-
-    <div
-        class="stat"
-        id="blocks"
-    >
-        —
-    </div>
-
-</div>
-
-
-<div class="card">
-
-    <div class="muted">
-        LATEST BLOCK
-    </div>
-
-    <div
-        class="stat"
-        id="latestBlock"
-    >
-        —
-    </div>
-
-</div>
-
-
-<div class="card">
-
-    <div class="muted">
-        MEMPOOL
-    </div>
-
-    <div
-        class="stat"
-        id="mempoolSize"
-    >
-        —
-    </div>
-
-</div>
-
-
-</div>
-
-<!-- NODE / PEERS -->
-
-<div class="section grid">
-
-
-<div class="card">
-
-    <h2>
-        Node Status
-    </h2>
-
-    <div
-        id="connectionStatus"
-        class="status offline"
-    >
-        Checking...
-    </div>
-
-    <p class="muted">
-        Latest block hash
-    </p>
-
-    <div
-        id="latestHash"
-        class="hash"
-    >
-        —
-    </div>
-
-    <button
-        onclick="refreshAll()"
-    >
-        Refresh Node
-    </button>
-
-</div>
-
-
-<div class="card">
-
-    <h2>
-        Peer Network
-    </h2>
-
-    <button
-        class="secondary"
-        onclick="loadPeers()"
-    >
-        Check Peers
-    </button>
-
-    <pre id="peersOutput">No data yet.</pre>
-
-</div>
-
-
-</div>
-
-<!-- BALANCE / MINING -->
-
-<div class="section grid">
-
-
-<div class="card">
-
-    <h2>
-        Check Balance
-    </h2>
-
-    <input
-        id="balanceAddress"
-        placeholder="Enter wallet address"
-    >
-
-    <button
-        onclick="checkBalance()"
-    >
-        Check Balance
-    </button>
-
-    <pre id="balanceOutput">
-
-
-No address entered. </pre>
-
-
-</div>
-
-
-<div class="card">
-
-    <h2>
-        Development Mining
-    </h2>
-
-    <p class="muted">
-        Mine a test block using this local node.
-    </p>
-
-    <input
-        id="minerAddress"
-        placeholder="Miner wallet address"
-    >
-
-    <button
-        onclick="mineTo()"
-    >
-        ⛏️ Mine To Address
-    </button>
-
-    <button
-        class="danger"
-        onclick="mineNode()"
-    >
-        ⛏️ Mine To Development Node
-    </button>
-
-    <pre id="miningOutput">
-
-
-No mining performed. </pre>
-
-
-</div>
-
-
-</div>
-
-<!-- MEMPOOL / BLOCKCHAIN -->
-
-<div class="section grid">
-
-
-<div class="card">
-
-    <h2>
-        Mempool
-    </h2>
-
-    <button
-        class="secondary"
-        onclick="loadMempool()"
-    >
-        Refresh Mempool
-    </button>
-
-    <pre id="mempoolOutput">
-
-
-No data yet. </pre>
-
-
-</div>
-
-
-<div class="card">
-
-    <h2>
-        Blockchain
-    </h2>
-
-    <button
-        class="secondary"
-        onclick="loadBlockchain()"
-    >
-        Load Blockchain
-    </button>
-
-    <pre id="blockchainOutput">
-
-
-No data yet. </pre>
-
-
-</div>
-
-
-</div>
-
-<!-- RAW STATUS -->
-
-<div class="section card">
-
-
-<h2>
-    Raw Node Status
-</h2>
-
-<pre id="statusOutput">
-
-
-Loading... </pre>
-
-</div>
-
-</div>
-
-<footer>
-
-Kyle20000 local development network ·
-Flask node interface
-
-</footer>
-
-<script>
-
-    /*
-     * ==========================================
-     * Kyle20000 Node Configuration
-     * ==========================================
-     *
-     * Change this when connecting the dashboard
-     * to a different node.
-     */
-
-    const NODE = "https://blockchain-production-4fe3.up.railway.app";
-
-
-    /*
-     * ==========================================
-     * API Helper
-     * ==========================================
-     */
-
-    async function api(
-        path,
-        options = {}
-    ) {
-
-        const response = await fetch(
-            NODE + path,
-            options
-        );
-
-        const data = await response.json();
-
-        return {
-            ok: response.ok,
-            data: data
-        };
-    }
-
-
-    /*
-     * ==========================================
-     * Load Node Status
-     * ==========================================
-     */
-
-    async function loadStatus() {
-
-        const statusElement =
-            document.getElementById(
-                "connectionStatus"
-            );
-
-        try {
-
-            const result =
-                await api("/status");
-
-            const data =
-                result.data;
-
-
-            document.getElementById(
-                "node"
-            ).textContent =
-                data.node;
-
-
-            document.getElementById(
-                "blocks"
-            ).textContent =
-                data.blocks;
-
-
-            document.getElementById(
-                "latestBlock"
-            ).textContent =
-                data.latest_block;
-
-
-            document.getElementById(
-                "mempoolSize"
-            ).textContent =
-                data.mempool_size;
-
-
-            document.getElementById(
-                "latestHash"
-            ).textContent =
-                data.latest_hash;
-
-
-            document.getElementById(
-                "statusOutput"
-            ).textContent =
-                JSON.stringify(
-                    data,
-                    null,
-                    2
-                );
-
-
-            statusElement.textContent =
-                "● ONLINE";
-
-
-            statusElement.classList.remove(
-                "offline"
-            );
-
-        } catch (error) {
-
-            statusElement.textContent =
-                "● OFFLINE";
-
-
-            statusElement.classList.add(
-                "offline"
-            );
-
-
-            document.getElementById(
-                "statusOutput"
-            ).textContent =
-                "Unable to connect to node.\n\n" +
-                error;
-
-        }
-    }
-
-
-    /*
-     * ==========================================
-     * Load Peer Status
-     * ==========================================
-     */
-
-    async function loadPeers() {
-
-        try {
-
-            const result =
-                await api(
-                    "/peer-status"
-                );
-
-
-            document.getElementById(
-                "peersOutput"
-            ).textContent =
-                JSON.stringify(
-                    result.data,
-                    null,
-                    2
-                );
-
-        } catch (error) {
-
-            document.getElementById(
-                "peersOutput"
-            ).textContent =
-                String(error);
-
-        }
-    }
-
-
-    /*
-     * ==========================================
-     * Load Mempool
-     * ==========================================
-     */
-
-    async function loadMempool() {
-
-        try {
-
-            const result =
-                await api(
-                    "/mempool"
-                );
-
-
-            document.getElementById(
-                "mempoolOutput"
-            ).textContent =
-                JSON.stringify(
-                    result.data,
-                    null,
-                    2
-                );
-
-        } catch (error) {
-
-            document.getElementById(
-                "mempoolOutput"
-            ).textContent =
-                String(error);
-
-        }
-    }
-
-
-    /*
-     * ==========================================
-     * Load Blockchain
-     * ==========================================
-     */
-
-    async function loadBlockchain() {
-
-        try {
-
-            const result =
-                await api(
-                    "/blockchain"
-                );
-
-
-            document.getElementById(
-                "blockchainOutput"
-            ).textContent =
-                JSON.stringify(
-                    result.data,
-                    null,
-                    2
-                );
-
-        } catch (error) {
-
-            document.getElementById(
-                "blockchainOutput"
-            ).textContent =
-                String(error);
-
-        }
-    }
-
-
-    /*
-     * ==========================================
-     * Check Wallet Balance
-     * ==========================================
-     */
-
-    async function checkBalance() {
-
-        const address =
-            document.getElementById(
-                "balanceAddress"
-            ).value.trim();
-
-
-        if (!address) {
-
-            alert(
-                "Enter a wallet address first."
-            );
-
-            return;
+    <main class="wrap">
+        <section class="hero">
+            <div>
+                <div class="eyebrow">Wallet · Explorer · Proof of Work</div>
+                <h1>Your coins. Your keys. Your network.</h1>
+                <p>Manage a wallet and inspect the live Kyle20000 node.</p>
+            </div>
+
+            <div style="min-width:0">
+                <label for="apiUrl" style="margin-top:0">NODE API URL</label>
+                <div class="api">
+                    <input
+                        id="apiUrl"
+                        spellcheck="false"
+                        value="https://blockchain-production-4fe3.up.railway.app"
+                        placeholder="https://your-node.example.com"
+                    >
+                    <button id="connectBtn" onclick="connectNode()">Connect</button>
+                </div>
+                <div class="hint">Local testing: http://127.0.0.1:5001</div>
+            </div>
+        </section>
+
+        <section class="stats">
+            <div class="stat">
+                <small>Latest block</small>
+                <strong id="blocksStat">—</strong>
+                <em id="blockHint">Chain height</em>
+            </div>
+
+            <div class="stat">
+                <small>Pending transactions</small>
+                <strong id="mempoolStat">—</strong>
+                <em>In mempool</em>
+            </div>
+
+            <div class="stat">
+                <small>Peer nodes</small>
+                <strong id="peersStat">—</strong>
+                <em>Configured peers</em>
+            </div>
+
+            <div class="stat">
+                <small>Node</small>
+                <strong id="nodeStat">—</strong>
+                <em id="nodeHint">Waiting for connection</em>
+            </div>
+        </section>
+
+        <div class="layout">
+            <section class="card">
+                <div class="cardhead">
+                    <h2>Wallet</h2>
+                    <span class="pill">🔐 Local key storage</span>
+                </div>
+
+                <div id="walletEmpty">
+                    <p class="muted">
+                        Create a wallet or import a private key. Your private key stays in this browser and is never sent to the node.
+                    </p>
+
+                    <div class="walletgrid">
+                        <button onclick="createWallet()">＋ Create wallet</button>
+                        <label class="filelabel" for="walletFile">Import backup file</label>
+                        <input
+                            id="walletFile"
+                            type="file"
+                            accept="application/json,.json"
+                            onchange="importWalletFile(event)"
+                        >
+                    </div>
+
+                    <label for="privateInput">Or import a Base64 private key</label>
+                    <input
+                        id="privateInput"
+                        autocomplete="off"
+                        spellcheck="false"
+                        placeholder="Paste 32-byte Base64 private key"
+                    >
+
+                    <div class="actions">
+                        <button class="secondary" onclick="importPrivateKey()">Import private key</button>
+                    </div>
+                </div>
+
+                <div id="walletActive" class="hidden">
+                    <div class="muted tiny">CONFIRMED BALANCE</div>
+
+                    <div class="balance">
+                        <span id="balance">—</span>
+                        <span style="font-size:14px;color:var(--muted);letter-spacing:0">KYC</span>
+                    </div>
+
+                    <div class="muted tiny" id="nonceLabel">Next nonce: —</div>
+                    <div class="address" id="walletAddress"></div>
+
+                    <div class="actions">
+                        <button class="secondary" onclick="copyAddress()">Copy address</button>
+                        <button class="secondary" onclick="downloadWallet()">Download backup</button>
+                        <button class="danger" onclick="forgetWallet()">Lock wallet</button>
+                    </div>
+
+                    <div class="notice warn">
+                        Anyone with your backup/private key can spend this wallet's coins. Store the backup somewhere safe.
+                    </div>
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="cardhead">
+                    <h2>Send KyleCoin</h2>
+                    <span class="pill">Signed locally</span>
+                </div>
+
+                <label for="recipient">Recipient address</label>
+                <input
+                    id="recipient"
+                    autocomplete="off"
+                    spellcheck="false"
+                    placeholder="Recipient wallet address (SHA-256 hex)"
+                >
+
+                <div class="row">
+                    <div>
+                        <label for="amount">Amount (whole KYC)</label>
+                        <input id="amount" type="number" min="1" step="1" placeholder="1">
+                    </div>
+
+                    <div>
+                        <label for="nonceInput">Nonce</label>
+                        <input id="nonceInput" type="number" min="0" step="1" placeholder="Fetched from node">
+                    </div>
+                </div>
+
+                <div class="hint">
+                    The nonce is the sender's next confirmed transaction count. Refresh balance before sending if another transaction is pending.
+                </div>
+
+                <div class="actions">
+                    <button id="sendBtn" onclick="sendTransaction()">Review & send</button>
+                    <button class="secondary" onclick="refreshWallet()">Refresh balance</button>
+                </div>
+
+                <div id="sendMessage" aria-live="polite"></div>
+            </section>
+
+            <section class="card">
+                <div class="cardhead">
+                    <h2>Mining</h2>
+                    <span class="pill">Proof of Work</span>
+                </div>
+
+                <p class="muted tiny">
+                    Mine a block and direct the block reward to your wallet address. Mining may take time and depends on the node's difficulty and CPU.
+                </p>
+
+                <label for="minerAddress">Reward address</label>
+                <input
+                    id="minerAddress"
+                    spellcheck="false"
+                    placeholder="Wallet address to receive reward"
+                >
+
+                <div class="actions">
+                    <button id="mineBtn" onclick="mineBlock()">⛏ Mine block</button>
+                    <button class="secondary" onclick="loadMempool()">Refresh mempool</button>
+                </div>
+
+                <div id="mineMessage" aria-live="polite"></div>
+
+                <div class="divider"></div>
+
+                <div class="cardhead">
+                    <h2>Network tools</h2>
+                    <span class="pill">Node actions</span>
+                </div>
+
+                <div class="actions">
+                    <button class="secondary" onclick="loadPeerStatus()">Check peers</button>
+                    <button class="secondary" onclick="syncChain()">Sync chain</button>
+                    <button class="secondary" onclick="refreshAll()">Refresh all</button>
+                </div>
+
+                <div id="networkMessage"></div>
+
+                <div class="divider"></div>
+
+                <div class="cardhead">
+                    <h2>Peer status</h2>
+                </div>
+
+                <div id="peerResults" class="empty">Connect to a node to inspect peers.</div>
+            </section>
+        </div>
+
+        <section class="card" style="margin-bottom:18px">
+            <div class="cardhead">
+                <h2>Blockchain explorer</h2>
+                <span class="pill" id="chainCount">Not loaded</span>
+            </div>
+
+            <div class="tabs">
+                <button class="tab active" data-tab="blocksTab" onclick="showTab('blocksTab',this)">Blocks</button>
+                <button class="tab" data-tab="mempoolTab" onclick="showTab('mempoolTab',this)">Mempool</button>
+                <button class="tab" data-tab="rawTab" onclick="showTab('rawTab',this)">Raw chain JSON</button>
+            </div>
+
+            <div id="blocksTab">
+                <div class="tablewrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Height</th>
+                                <th>Miner / reward address</th>
+                                <th>Reward</th>
+                                <th>Difficulty</th>
+                                <th>Transactions</th>
+                                <th>Hash</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="blocksRows">
+                            <tr>
+                                <td colspan="7" class="empty">Connect to load blocks.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="mempoolTab" class="hidden">
+                <div class="tablewrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Sender</th>
+                                <th>Recipient</th>
+                                <th>Amount</th>
+                                <th>Nonce</th>
+                                <th>Transaction ID</th>
+                            </tr>
+                        </thead>
+                        <tbody id="mempoolRows">
+                            <tr>
+                                <td colspan="5" class="empty">No data.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="rawTab" class="hidden">
+                <pre id="rawChain" class="pre">No chain loaded.</pre>
+            </div>
+
+            <div id="detailBox" class="hidden" style="margin-top:14px">
+                <div class="labelrow">
+                    <strong>Selected block details</strong>
+                    <button
+                        class="secondary smallbtn"
+                        onclick="document.getElementById('detailBox').classList.add('hidden')"
+                    >Close</button>
+                </div>
+                <pre id="blockDetail" class="pre"></pre>
+            </div>
+        </section>
+
+        <div class="footer">
+            Kyle20000 Wallet & Explorer · This interface talks directly to your configured node. Pending transactions are not confirmed until included in an accepted block.
+        </div>
+    </main>
+
+    <script>
+        'use strict';
+
+        const $ = id => document.getElementById(id);
+        let nodeBase = '', currentWallet = null, latestChain = null, refreshTimer = null;
+        const enc = new TextEncoder();
+
+        function base64(bytes) {
+            let s = '';
+            for (let i = 0; i < bytes.length; i++) s += String.fromCharCode(bytes[i]);
+            return btoa(s);
         }
 
-
-        try {
-
-            const result =
-                await api(
-                    "/balance/" +
-                    encodeURIComponent(
-                        address
-                    )
-                );
-
-
-            document.getElementById(
-                "balanceOutput"
-            ).textContent =
-                JSON.stringify(
-                    result.data,
-                    null,
-                    2
-                );
-
-        } catch (error) {
-
-            document.getElementById(
-                "balanceOutput"
-            ).textContent =
-                String(error);
-
-        }
-    }
-
-
-    /*
-     * ==========================================
-     * Mine To Wallet
-     * ==========================================
-     */
-
-    async function mineTo() {
-
-        const address =
-            document.getElementById(
-                "minerAddress"
-            ).value.trim();
-
-
-        if (!address) {
-
-            alert(
-                "Enter a miner address first."
-            );
-
-            return;
+        function unbase64(s) {
+            const raw = atob(s.trim());
+            return Uint8Array.from(raw, c => c.charCodeAt(0));
         }
 
-
-        document.getElementById(
-            "miningOutput"
-        ).textContent =
-            "Mining...\nPlease wait.";
-
-
-        try {
-
-            const result =
-                await api(
-                    "/mine-to/" +
-                    encodeURIComponent(
-                        address
-                    )
-                );
-
-
-            document.getElementById(
-                "miningOutput"
-            ).textContent =
-                JSON.stringify(
-                    result.data,
-                    null,
-                    2
-                );
-
-
-            await refreshAll();
-
-        } catch (error) {
-
-            document.getElementById(
-                "miningOutput"
-            ).textContent =
-                String(error);
-
+        function bytesHex(b) {
+            return Array.from(b, x => x.toString(16).padStart(2, '0')).join('');
         }
-    }
 
+        async function sha256(bytes) {
+            return new Uint8Array(await crypto.subtle.digest('SHA-256', bytes));
+        }
 
-    /*
-     * ==========================================
-     * Development Node Mining
-     * ==========================================
-     */
+        function setMessage(id, msg, type = 'notice') {
+            const el = $(id);
+            el.className = type;
+            el.textContent = msg;
+            el.classList.remove('hidden');
+        }
 
-    async function mineNode() {
+        function clearMessage(id) {
+            $(id).className = '';
+            $(id).textContent = '';
+        }
 
-        document.getElementById(
-            "miningOutput"
-        ).textContent =
-            "Mining...\nPlease wait.";
+        function fmt(v) {
+            return v === undefined || v === null ? '—' : String(v);
+        }
 
+        function short(v, n = 12) {
+            if (!v) return '—';
+            v = String(v);
+            return v.length > n * 2 ? v.slice(0, n) + '…' + v.slice(-n) : v;
+        }
 
-        try {
+        function getUrl() {
+            return $('apiUrl').value.trim().replace(/\/+$/, '');
+        }
 
-            const result =
-                await api(
-                    "/mine",
-                    {
-                        method: "POST"
+        async function api(path, options = {}) {
+            if (!nodeBase) nodeBase = getUrl();
+            if (!nodeBase) throw new Error('Enter the node API URL first.');
+
+            let res;
+
+            try {
+                res = await fetch(nodeBase + path, {
+                    ...options,
+                    headers: {
+                        ...(options.body ? { 'Content-Type': 'application/json' } : {}),
+                        ...(options.headers || {})
                     }
+                });
+            } catch (e) {
+                throw new Error(
+                    'Could not reach node. Check URL, HTTPS/CORS settings, and that the server is running. ' +
+                    e.message
                 );
+            }
 
+            let data;
 
-            document.getElementById(
-                "miningOutput"
-            ).textContent =
-                JSON.stringify(
-                    result.data,
-                    null,
-                    2
-                );
+            try {
+                data = await res.json();
+            } catch {
+                data = {
+                    error: await res.text().catch(() => 'Non-JSON response')
+                };
+            }
 
+            if (!res.ok) {
+                throw new Error(data.reason || data.error || data.message || `HTTP ${res.status}`);
+            }
 
-            await refreshAll();
-
-        } catch (error) {
-
-            document.getElementById(
-                "miningOutput"
-            ).textContent =
-                String(error);
-
+            return data;
         }
-    }
 
+        async function connectNode() {
+            nodeBase = getUrl();
 
-    /*
-     * ==========================================
-     * Refresh Everything
-     * ==========================================
-     */
+            if (!nodeBase) {
+                setMessage('networkMessage', 'Enter your node API URL.', 'notice err');
+                return;
+            }
 
-    async function refreshAll() {
+            localStorage.setItem('kyle20000_node_url', nodeBase);
+            $('connectBtn').disabled = true;
+            $('netText').textContent = 'Connecting…';
 
-        await loadStatus();
+            try {
+                await refreshAll();
+                $('netDot').classList.add('ok');
+                $('netText').textContent = 'Connected';
 
-        await loadMempool();
+                if (refreshTimer) clearInterval(refreshTimer);
 
-    }
+                refreshTimer = setInterval(() => refreshAll(true), 15000);
+            } catch (e) {
+                $('netDot').classList.remove('ok');
+                $('netText').textContent = 'Connection failed';
+                setMessage('networkMessage', e.message, 'notice err');
+            } finally {
+                $('connectBtn').disabled = false;
+            }
+        }
 
+        async function refreshAll(silent = false) {
+            nodeBase = getUrl();
 
-    /*
-     * ==========================================
-     * Initial Load
-     * ==========================================
-     */
+            const s = await api('/status');
 
-    refreshAll();
+            $('blocksStat').textContent = fmt(s.blocks);
+            $('blockHint').textContent = 'Latest index ' + fmt(s.latest_block);
+            $('mempoolStat').textContent = fmt(s.mempool_size);
+            $('peersStat').textContent = Array.isArray(s.peers) ? s.peers.length : '—';
+            $('nodeStat').textContent = fmt(s.node);
+            $('nodeHint').textContent = 'Latest hash ' + short(s.latest_hash, 5);
+            $('netDot').classList.add('ok');
+            $('netText').textContent = 'Connected';
 
+            await Promise.allSettled([
+                loadChain(),
+                loadMempool(),
+                loadPeerStatus()
+            ]);
 
-    /*
-     * Automatically refresh node status
-     * every five seconds.
-     */
+            if (currentWallet) await refreshWallet(silent);
 
-    setInterval(
-        loadStatus,
-        5000
-    );
+            if (!silent) {
+                setMessage('networkMessage', 'Connected to node ' + s.node + '. Dashboard refreshed.', 'notice');
+            }
+        }
 
-</script>
+        function createWallet() {
+            if (!window.nacl) {
+                setMessage(
+                    'sendMessage',
+                    'The signing library did not load. Connect to the internet and reload the page before creating a wallet.',
+                    'notice err'
+                );
+                return;
+            }
 
+            const pair = nacl.sign.keyPair();
+
+            currentWallet = {
+                privateKey: base64(pair.secretKey.slice(0, 32)),
+                publicKey: base64(pair.publicKey),
+                address: ''
+            };
+
+            finishWalletSetup().catch(e => setMessage('sendMessage', e.message, 'notice err'));
+        }
+
+        async function walletFromPrivate(privateKey) {
+            if (!window.nacl) {
+                throw new Error('Signing library unavailable. Reload with internet access.');
+            }
+
+            let seed = unbase64(privateKey);
+
+            if (seed.length === 64) seed = seed.slice(0, 32);
+
+            if (seed.length !== 32) {
+                throw new Error(
+                    'Private key must decode to 32 bytes (or a 64-byte TweetNaCl secret key).'
+                );
+            }
+
+            const pair = nacl.sign.keyPair.fromSeed(seed);
+
+            currentWallet = {
+                privateKey: base64(seed),
+                publicKey: base64(pair.publicKey),
+                address: ''
+            };
+
+            await finishWalletSetup();
+        }
+
+        async function finishWalletSetup() {
+            currentWallet.address = bytesHex(await sha256(unbase64(currentWallet.publicKey)));
+
+            localStorage.setItem('kyle20000_wallet', JSON.stringify(currentWallet));
+
+            renderWallet();
+            $('minerAddress').value = currentWallet.address;
+
+            if (nodeBase) await refreshWallet();
+        }
+
+        function renderWallet() {
+            const yes = !!currentWallet;
+
+            $('walletEmpty').classList.toggle('hidden', yes);
+            $('walletActive').classList.toggle('hidden', !yes);
+
+            if (yes) {
+                $('walletAddress').textContent = currentWallet.address;
+                $('minerAddress').value = currentWallet.address;
+            }
+        }
+
+        async function importPrivateKey() {
+            try {
+                await walletFromPrivate($('privateInput').value);
+                $('privateInput').value = '';
+
+                setMessage(
+                    'sendMessage',
+                    'Wallet imported. Confirm the address and back up your key securely.',
+                    'notice'
+                );
+            } catch (e) {
+                setMessage('sendMessage', e.message, 'notice err');
+            }
+        }
+
+        async function importWalletFile(event) {
+            try {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                const data = JSON.parse(await file.text());
+
+                await walletFromPrivate(
+                    data.private_key || data.privateKey || data.privateKeyBase64
+                );
+
+                setMessage(
+                    'sendMessage',
+                    'Wallet backup imported. Verify the displayed address.',
+                    'notice'
+                );
+            } catch (e) {
+                setMessage('sendMessage', 'Could not import backup: ' + e.message, 'notice err');
+            } finally {
+                event.target.value = '';
+            }
+        }
+
+        function downloadWallet() {
+            if (!currentWallet) return;
+
+            const blob = new Blob([
+                JSON.stringify({
+                    format: 'Kyle20000 wallet backup v1',
+                    address: currentWallet.address,
+                    public_key: currentWallet.publicKey,
+                    private_key: currentWallet.privateKey
+                }, null, 2)
+            ], {
+                type: 'application/json'
+            });
+
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'kyle20000-wallet-backup.json';
+            a.click();
+
+            URL.revokeObjectURL(a.href);
+        }
+
+        function forgetWallet() {
+            if (!confirm('Lock this wallet and remove its key from this browser? Make sure you have a backup.')) {
+                return;
+            }
+
+            currentWallet = null;
+            localStorage.removeItem('kyle20000_wallet');
+            renderWallet();
+
+            $('balance').textContent = '—';
+            $('nonceLabel').textContent = 'Next nonce: —';
+        }
+
+        async function copyAddress() {
+            if (!currentWallet) return;
+
+            try {
+                await navigator.clipboard.writeText(currentWallet.address);
+                setMessage('sendMessage', 'Address copied.', 'notice');
+            } catch {
+                setMessage('sendMessage', 'Your address: ' + currentWallet.address, 'notice');
+            }
+        }
+
+        async function refreshWallet(silent = false) {
+            if (!currentWallet) return;
+
+            const b = await api('/balance/' + encodeURIComponent(currentWallet.address));
+
+            $('balance').textContent = fmt(b.balance);
+            $('nonceLabel').textContent = 'Next nonce: ' + fmt(b.nonce);
+            $('nonceInput').value = Number(b.nonce);
+
+            if (!silent) {
+                setMessage('sendMessage', 'Balance and nonce updated from node.', 'notice');
+            }
+        }
+
+        function canonicalTransaction(tx) {
+            const sorted = {
+                amount: tx.amount,
+                nonce: tx.nonce,
+                public_key: tx.public_key,
+                recipient: tx.recipient,
+                sender: tx.sender
+            };
+
+            return JSON.stringify(sorted);
+        }
+
+        async function sendTransaction() {
+            clearMessage('sendMessage');
+
+            if (!currentWallet) {
+                setMessage('sendMessage', 'Create or import a wallet first.', 'notice err');
+                return;
+            }
+
+            if (!window.nacl) {
+                setMessage(
+                    'sendMessage',
+                    'Signing library unavailable. Reload this page with internet access.',
+                    'notice err'
+                );
+                return;
+            }
+
+            const recipient = $('recipient').value.trim().toLowerCase();
+            const amount = Number($('amount').value);
+            const nonce = Number($('nonceInput').value);
+
+            if (!/^[a-f0-9]{64}$/.test(recipient)) {
+                setMessage(
+                    'sendMessage',
+                    'Recipient must be a 64-character hexadecimal wallet address.',
+                    'notice err'
+                );
+                return;
+            }
+
+            if (recipient === currentWallet.address) {
+                setMessage('sendMessage', 'Sender and recipient cannot be the same.', 'notice err');
+                return;
+            }
+
+            if (!Number.isSafeInteger(amount) || amount <= 0) {
+                setMessage(
+                    'sendMessage',
+                    'Amount must be a positive whole-number KYC amount.',
+                    'notice err'
+                );
+                return;
+            }
+
+            if (!Number.isSafeInteger(nonce) || nonce < 0) {
+                setMessage(
+                    'sendMessage',
+                    'Nonce must be a non-negative integer. Refresh your wallet balance first.',
+                    'notice err'
+                );
+                return;
+            }
+
+            if (!confirm(
+                `Send ${amount} KYC to ${recipient}? This action cannot be undone once confirmed.`
+            )) {
+                return;
+            }
+
+            $('sendBtn').disabled = true;
+            $('sendBtn').textContent = 'Signing & submitting…';
+
+            try {
+                const tx = {
+                    sender: currentWallet.address,
+                    recipient,
+                    amount,
+                    nonce,
+                    public_key: currentWallet.publicKey
+                };
+
+                const message = enc.encode(canonicalTransaction(tx));
+
+                const secret = nacl.sign.keyPair.fromSeed(
+                    unbase64(currentWallet.privateKey)
+                ).secretKey;
+
+                tx.signature = base64(nacl.sign.detached(message, secret));
+
+                const result = await api('/transaction', {
+                    method: 'POST',
+                    body: JSON.stringify(tx)
+                });
+
+                setMessage(
+                    'sendMessage',
+                    `Accepted into mempool. Transaction ID: ${result.transaction_id || '(not returned)'}. It is pending until mined into an accepted block.`,
+                    'notice'
+                );
+
+                await Promise.allSettled([
+                    loadMempool(),
+                    refreshWallet(true),
+                    refreshAll(true)
+                ]);
+            } catch (e) {
+                setMessage(
+                    'sendMessage',
+                    'Transaction rejected or submission failed: ' + e.message,
+                    'notice err'
+                );
+            } finally {
+                $('sendBtn').disabled = false;
+                $('sendBtn').textContent = 'Review & send';
+            }
+        }
+
+        async function mineBlock() {
+            const address = $('minerAddress').value.trim().toLowerCase();
+
+            if (!/^[a-f0-9]{64}$/.test(address)) {
+                setMessage(
+                    'mineMessage',
+                    'Enter a valid 64-character hexadecimal reward address (create/import your wallet to fill it automatically).',
+                    'notice err'
+                );
+                return;
+            }
+
+            if (!confirm('Mine a block on this node and direct its reward to this address?')) {
+                return;
+            }
+
+            $('mineBtn').disabled = true;
+            $('mineBtn').textContent = 'Mining…';
+
+            try {
+                const r = await api('/mine-to/' + encodeURIComponent(address), {
+                    method: 'POST'
+                });
+
+                setMessage(
+                    'mineMessage',
+                    `Block mined. Height: ${r.block?.index ?? '—'} · Reward: ${r.reward ?? r.block?.reward ?? '—'} KYC. Peer broadcast was attempted.`,
+                    'notice'
+                );
+
+                await refreshAll(true);
+            } catch (e) {
+                setMessage('mineMessage', 'Mining failed: ' + e.message, 'notice err');
+            } finally {
+                $('mineBtn').disabled = false;
+                $('mineBtn').textContent = '⛏ Mine block';
+            }
+        }
+
+        async function loadChain() {
+            const data = await api('/blockchain');
+
+            latestChain = data.blocks;
+
+            const blocks = Array.isArray(data.blocks)
+                ? data.blocks
+                : (data.blocks?.chain || []);
+
+            const normalized = Array.isArray(blocks) ? blocks : [];
+
+            $('chainCount').textContent = normalized.length + ' blocks';
+            $('rawChain').textContent = JSON.stringify(data, null, 2);
+            $('blocksRows').innerHTML = '';
+
+            if (!normalized.length) {
+                $('blocksRows').innerHTML =
+                    '<tr><td colspan="7" class="empty">No blocks returned by node.</td></tr>';
+                return;
+            }
+
+            for (const b of [...normalized].reverse()) {
+                const txs = b.transactions || [];
+                const tr = document.createElement('tr');
+
+                const vals = [
+                    b.index ?? b.height ?? '—',
+                    b.miner ?? b.miner_address ?? '—',
+                    b.reward ?? '—',
+                    b.difficulty ?? '—',
+                    txs.length,
+                    b.hash ?? b.block_hash ?? '—'
+                ];
+
+                for (let i = 0; i < vals.length; i++) {
+                    const td = document.createElement('td');
+                    td.textContent = String(vals[i]);
+
+                    if (i === 5) {
+                        td.innerHTML = '<code>' + escapeHtml(short(vals[i], 8)) + '</code>';
+                    }
+
+                    tr.appendChild(td);
+                }
+
+                const td = document.createElement('td');
+                const btn = document.createElement('button');
+
+                btn.className = 'secondary smallbtn';
+                btn.textContent = 'Details';
+                btn.onclick = () => showBlock(b);
+
+                td.appendChild(btn);
+                tr.appendChild(td);
+
+                $('blocksRows').appendChild(tr);
+            }
+        }
+
+        function showBlock(b) {
+            $('detailBox').classList.remove('hidden');
+            $('blockDetail').textContent = JSON.stringify(b, null, 2);
+            $('detailBox').scrollIntoView({
+                behavior: 'smooth',
+                block: 'nearest'
+            });
+        }
+
+        function escapeHtml(s) {
+            return String(s).replace(/[&<>"']/g, c => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;'
+            }[c]));
+        }
+
+        async function loadMempool() {
+            const d = await api('/mempool');
+            const txs = d.transactions || [];
+
+            $('mempoolStat').textContent = fmt(d.count ?? txs.length);
+            $('mempoolRows').innerHTML = '';
+
+            if (!txs.length) {
+                $('mempoolRows').innerHTML =
+                    '<tr><td colspan="5" class="empty">Mempool is empty.</td></tr>';
+                return;
+            }
+
+            for (const t of txs) {
+                const tr = document.createElement('tr');
+
+                for (const v of [
+                    short(t.sender, 8),
+                    short(t.recipient, 8),
+                    t.amount,
+                    t.nonce,
+                    t.transaction_id || t.txid || '—'
+                ]) {
+                    const td = document.createElement('td');
+                    td.textContent = String(v);
+                    tr.appendChild(td);
+                }
+
+                $('mempoolRows').appendChild(tr);
+            }
+        }
+
+        async function loadPeerStatus() {
+            try {
+                const d = await api('/peer-status');
+                const peers = d.peers || [];
+
+                $('peerResults').innerHTML = '';
+
+                if (!peers.length) {
+                    $('peerResults').textContent = 'No peers configured on this node.';
+                    return;
+                }
+
+                for (const p of peers) {
+                    const row = document.createElement('div');
+
+                    row.style.cssText =
+                        'display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);font-size:12px';
+
+                    const left = document.createElement('span');
+                    left.textContent = p.peer;
+                    left.style.overflowWrap = 'anywhere';
+
+                    const right = document.createElement('span');
+                    right.textContent = p.online ? '● Online' : '● Offline';
+                    right.style.color = p.online ? 'var(--green)' : 'var(--red)';
+
+                    row.append(left, right);
+                    $('peerResults').appendChild(row);
+                }
+            } catch (e) {
+                $('peerResults').textContent = e.message;
+            }
+        }
+
+        async function syncChain() {
+            try {
+                setMessage('networkMessage', 'Requesting peer chain synchronization…', 'notice');
+
+                const d = await api('/sync');
+
+                setMessage('networkMessage', 'Sync completed. ' + JSON.stringify(d), 'notice');
+
+                await refreshAll(true);
+            } catch (e) {
+                setMessage('networkMessage', 'Sync failed: ' + e.message, 'notice err');
+            }
+        }
+
+        function showTab(id, button) {
+            for (const t of ['blocksTab', 'mempoolTab', 'rawTab']) {
+                $(t).classList.toggle('hidden', t !== id);
+            }
+
+            document.querySelectorAll('.tab').forEach(
+                b => b.classList.toggle('active', b === button)
+            );
+        }
+
+        const DEFAULT_NODE_URL = 'https://blockchain-production-4fe3.up.railway.app';
+
+        async function init() {
+            $('apiUrl').value = DEFAULT_NODE_URL;
+
+            try {
+                const saved = JSON.parse(
+                    localStorage.getItem('kyle20000_wallet') || 'null'
+                );
+
+                if (saved?.privateKey) {
+                    await walletFromPrivate(saved.privateKey);
+                }
+            } catch (e) {
+                localStorage.removeItem('kyle20000_wallet');
+                currentWallet = null;
+                renderWallet();
+            }
+
+            connectNode();
+        }
+
+        window.addEventListener('load', init);
+    </script>
 </body>
 </html>
+```
