@@ -433,11 +433,9 @@ def get_mempool():
 @app.route("/balance/<address>", methods=["GET"])
 def get_balance(address=None):
 
-    # Get address from URL if not provided
     if address is None:
         address = request.args.get("address")
 
-    # Check that address exists
     if not address:
         return jsonify({
             "success": False,
