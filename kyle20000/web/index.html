@@ -941,32 +941,86 @@
             }
         }
 
+        
         async function refreshAll(silent = false) {
+        
             nodeBase = getUrl();
-
-            const s = await api('/status');
-
-            $('blocksStat').textContent = fmt(s.blocks);
-            $('blockHint').textContent = 'Latest index ' + fmt(s.latest_block);
-            $('mempoolStat').textContent = fmt(s.mempool_size);
-            $('peersStat').textContent = Array.isArray(s.peers) ? s.peers.length : '—';
-            $('nodeStat').textContent = fmt(s.node);
-            $('nodeHint').textContent = 'Latest hash ' + short(s.latest_hash, 5);
-            $('netDot').classList.add('ok');
-            $('netText').textContent = 'Connected';
-
-            await Promise.allSettled([
-                loadChain(),
-                loadMempool(),
-                loadPeerStatus()
-            ]);
-
-            if (currentWallet) await refreshWallet(silent);
-
-            if (!silent) {
-                setMessage('networkMessage', 'Connected to node ' + s.node + '. Dashboard refreshed.', 'notice');
+        
+            try {
+        
+                const s = await api('/status');
+        
+                $('blocksStat').textContent = fmt(s.blocks);
+                $('blockHint').textContent =
+                    'Latest index ' + fmt(s.latest_block);
+        
+                $('mempoolStat').textContent = fmt(s.mempool_size);
+        
+                $('peersStat').textContent =
+                    Array.isArray(s.peers) ? s.peers.length : '—';
+        
+                $('nodeStat').textContent = fmt(s.node);
+        
+                $('nodeHint').textContent =
+                    'Latest hash ' + short(s.latest_hash, 5);
+        
+                $('netDot').classList.add('ok');
+                $('netText').textContent = 'Connected';
+        
+                // Refresh blockchain, mempool and peers independently.
+                const results = await Promise.allSettled([
+                    loadChain(),
+                    loadMempool(),
+                    loadPeerStatus()
+                ]);
+        
+                results.forEach((result, index) => {
+                    if (result.status === 'rejected') {
+                        console.error(
+                            'Network refresh failed:',
+                            index,
+                            result.reason
+                        );
+                    }
+                });
+        
+                // Refresh wallet independently.
+                if (currentWallet) {
+                    try {
+                        await refreshWallet(silent);
+                    } catch (error) {
+                        console.error('Wallet refresh failed:', error);
+                    }
+                }
+        
+                if (!silent) {
+                    setMessage(
+                        'networkMessage',
+                        'Connected to node ' + s.node +
+                        '. Dashboard refreshed.',
+                        'notice'
+                    );
+                }
+        
+                return s;
+        
+            } catch (e) {
+        
+                $('netDot').classList.remove('ok');
+                $('netText').textContent = 'Connection failed';
+        
+                if (!silent) {
+                    setMessage(
+                        'networkMessage',
+                        'Node connection failed: ' + e.message,
+                        'notice err'
+                    );
+                }
+        
+                throw e;
             }
         }
+
 
         function createWallet() {
             if (!window.nacl) {
@@ -1123,27 +1177,42 @@
         }
 
 
+        
         async function refreshWallet(silent = false) {
             if (!currentWallet) return;
         
             try {
                 const result = await api(
-                    `/balance?address=${encodeURIComponent(currentWallet.address)}`
+                    `/balance/${encodeURIComponent(currentWallet.address)}`
                 );
         
+                if (!result.success) {
+                    throw new Error(result.error || 'Balance request failed');
+                }
+        
+                if (result.balance === undefined || result.nonce === undefined) {
+                    throw new Error('Node returned an incomplete balance response.');
+                }
+        
                 $('balance').textContent = fmt(result.balance);
-                $('nonceLabel').textContent = 'Next nonce: ' + fmt(result.nonce);
+        
+                $('nonceLabel').textContent =
+                    'Next nonce: ' + fmt(result.nonce);
+        
                 $('nonceInput').value = Number(result.nonce);
         
                 if (!silent) {
                     setMessage(
                         'sendMessage',
-                        'Balance and nonce updated from node.',
+                        'Balance and nonce updated successfully.',
                         'notice'
                     );
                 }
         
+                return result;
+        
             } catch (e) {
+        
                 if (!silent) {
                     setMessage(
                         'sendMessage',
@@ -1155,6 +1224,7 @@
                 throw e;
             }
         }
+
 
 
         function canonicalTransaction(tx) {
