@@ -1122,19 +1122,40 @@
             }
         }
 
+
         async function refreshWallet(silent = false) {
             if (!currentWallet) return;
-
-            const b = await api('/balance/' + encodeURIComponent(currentWallet.address));
-
-            $('balance').textContent = fmt(b.balance);
-            $('nonceLabel').textContent = 'Next nonce: ' + fmt(b.nonce);
-            $('nonceInput').value = Number(b.nonce);
-
-            if (!silent) {
-                setMessage('sendMessage', 'Balance and nonce updated from node.', 'notice');
+        
+            try {
+                const result = await api(
+                    `/balance?address=${encodeURIComponent(currentWallet.address)}`
+                );
+        
+                $('balance').textContent = fmt(result.balance);
+                $('nonceLabel').textContent = 'Next nonce: ' + fmt(result.nonce);
+                $('nonceInput').value = Number(result.nonce);
+        
+                if (!silent) {
+                    setMessage(
+                        'sendMessage',
+                        'Balance and nonce updated from node.',
+                        'notice'
+                    );
+                }
+        
+            } catch (e) {
+                if (!silent) {
+                    setMessage(
+                        'sendMessage',
+                        'Could not refresh wallet balance: ' + e.message,
+                        'notice err'
+                    );
+                }
+        
+                throw e;
             }
         }
+
 
         function canonicalTransaction(tx) {
             const sorted = {
