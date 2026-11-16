@@ -424,29 +424,43 @@ def get_mempool():
     })
 
 
+
 # --------------------------------------------------
 # Balance
 # --------------------------------------------------
 
-@app.route(
-    "/balance/<address>",
-    methods=["GET"]
-)
-def get_balance(address):
+@app.route("/balance", methods=["GET"])
+@app.route("/balance/<address>", methods=["GET"])
+def get_balance(address=None):
 
-    return jsonify({
-        "address": address,
+    # Get address from URL if not provided
+    if address is None:
+        address = request.args.get("address")
 
-        "balance":
-            blockchain.get_balance(
-                address
-            ),
+    # Check that address exists
+    if not address:
+        return jsonify({
+            "success": False,
+            "error": "Wallet address is required"
+        }), 400
 
-        "nonce":
-            blockchain.get_nonce(
-                address
-            )
-    })
+    try:
+        balance = blockchain.get_balance(address)
+        nonce = blockchain.get_nonce(address)
+
+        return jsonify({
+            "success": True,
+            "address": address,
+            "balance": balance,
+            "nonce": nonce
+        })
+
+    except Exception as error:
+        return jsonify({
+            "success": False,
+            "error": str(error)
+        }), 500
+
 
 
 # --------------------------------------------------
