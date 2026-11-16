@@ -433,16 +433,25 @@ def get_mempool():
 @app.route("/balance/<address>", methods=["GET"])
 def get_balance(address=None):
 
-    if address is None:
-        address = request.args.get("address")
-
-    if not address:
-        return jsonify({
-            "success": False,
-            "error": "Wallet address is required"
-        }), 400
-
     try:
+        # Support both URL formats
+        if not address:
+            address = request.args.get("address")
+
+        if not address:
+            return jsonify({
+                "success": False,
+                "error": "Wallet address is required"
+            }), 400
+
+        address = address.strip().lower()
+
+        if len(address) != 64:
+            return jsonify({
+                "success": False,
+                "error": "Invalid wallet address"
+            }), 400
+
         balance = blockchain.get_balance(address)
         nonce = blockchain.get_nonce(address)
 
@@ -451,13 +460,16 @@ def get_balance(address=None):
             "address": address,
             "balance": balance,
             "nonce": nonce
-        })
+        }), 200
 
     except Exception as error:
+        app.logger.exception("Balance endpoint failed")
+
         return jsonify({
             "success": False,
             "error": str(error)
         }), 500
+
 
 
 
