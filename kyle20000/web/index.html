@@ -1178,52 +1178,75 @@
 
 
         
-        async function refreshWallet(silent = false) {
-            if (!currentWallet) return;
         
-            try {
-                const result = await api(
-                    `/balance/${encodeURIComponent(currentWallet.address)}`
-                );
-        
-                if (!result.success) {
-                    throw new Error(result.error || 'Balance request failed');
-                }
-        
-                if (result.balance === undefined || result.nonce === undefined) {
-                    throw new Error('Node returned an incomplete balance response.');
-                }
-        
-                $('balance').textContent = fmt(result.balance);
-        
-                $('nonceLabel').textContent =
-                    'Next nonce: ' + fmt(result.nonce);
-        
-                $('nonceInput').value = Number(result.nonce);
-        
-                if (!silent) {
-                    setMessage(
-                        'sendMessage',
-                        'Balance and nonce updated successfully.',
-                        'notice'
-                    );
-                }
-        
-                return result;
-        
-            } catch (e) {
-        
-                if (!silent) {
-                    setMessage(
-                        'sendMessage',
-                        'Could not refresh wallet balance: ' + e.message,
-                        'notice err'
-                    );
-                }
-        
-                throw e;
-            }
+async function refreshWallet(silent = false) {
+    if (!currentWallet) return;
+
+    try {
+        const result = await api(
+            `/balance/${encodeURIComponent(currentWallet.address)}`
+        );
+
+        console.log("Balance API response:", result);
+
+        if (result.error) {
+            throw new Error(result.error);
         }
+
+        // Support different backend response formats.
+        const data = result.data || result.wallet || result;
+
+        const balance = data.balance ?? data.confirmed_balance;
+        const nonce = data.nonce ?? data.next_nonce ?? 0;
+
+        if (balance === undefined || balance === null) {
+            throw new Error(
+                "Balance missing from node response: " +
+                JSON.stringify(result)
+            );
+        }
+
+        if (!Number.isFinite(Number(balance))) {
+            throw new Error("Invalid balance returned by node.");
+        }
+
+        if (!Number.isSafeInteger(Number(nonce)) || Number(nonce) < 0) {
+            throw new Error("Invalid nonce returned by node.");
+        }
+
+        $("balance").textContent = fmt(balance);
+
+        $("nonceLabel").textContent =
+            "Next nonce: " + fmt(nonce);
+
+        $("nonceInput").value = Number(nonce);
+
+        if (!silent) {
+            setMessage(
+                "sendMessage",
+                "Balance and nonce updated successfully.",
+                "notice"
+            );
+        }
+
+        return result;
+
+    } catch (e) {
+
+        console.error("Wallet balance refresh error:", e);
+
+        if (!silent) {
+            setMessage(
+                "sendMessage",
+                "Could not refresh wallet balance: " + e.message,
+                "notice err"
+            );
+        }
+
+        throw e;
+    }
+}
+
 
 
 
